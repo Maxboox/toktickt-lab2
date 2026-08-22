@@ -1,0 +1,7 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "scripts": {
+    "seed": "npx ts-node prisma/seed/seed.ts"
+  }
+}
