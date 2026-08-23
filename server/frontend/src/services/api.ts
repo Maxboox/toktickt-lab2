@@ -125,3 +125,42 @@ export const createTicket = async (data: CreateTicketData): Promise<Ticket> => {
   }
   return response.json()
 }
+
+// Tickets list
+export interface TicketListResponse {
+  items: Ticket[]
+  pagination: {
+    currentPage: number
+    totalPages: number
+    totalItems: number
+    itemsPerPage: number
+    hasNext: boolean
+    hasPrevious: boolean
+  }
+}
+
+export interface TicketFilters {
+  requesterId: number
+  search?: string
+  categoryId?: number
+  status?: string
+  sort?: string
+  order?: 'asc' | 'desc'
+  page?: number
+  limit?: number
+}
+
+export const getTickets = async (filters: TicketFilters): Promise<TicketListResponse> => {
+  const params = new URLSearchParams()
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      params.append(key, String(value))
+    }
+  })
+  
+  const response = await fetch(`${API_URL}/tickets?${params.toString()}`)
+  if (!response.ok) {
+    throw new Error('Failed to fetch tickets')
+  }
+  return response.json()
+}
