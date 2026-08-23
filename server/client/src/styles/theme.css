@@ -1,0 +1,330 @@
+/* TokTickT - Zen Green Theme */
+
+:root {
+  /* Couleurs principales */
+  --primary-green: #006B3C;
+  --secondary-green: #0B7A46;
+  --pale-green: #EAF6EF;
+  --page-bg: #F5F7F6;
+  --surface: #FFFFFF;
+  --text: #2C3E35;
+  
+  /* États */
+  --error: #D32F2F;
+  --warning: #FFA000;
+  --success: #006B3C;
+  
+  /* Espacements */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  
+  /* Typographie */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 32px;
+  
+  /* Bordures */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-color: #D1D5DB;
+  
+  /* Ombres */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Reset et base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--page-bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Container principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+/* ============================================
+   BOUTONS
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: 10px 24px;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  min-height: 44px;
+}
+
+.btn-primary {
+  background-color: var(--primary-green);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #005a32;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background-color: white;
+  color: var(--primary-green);
+  border: 1.5px solid var(--primary-green);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--pale-green);
+}
+
+.btn-danger {
+  background-color: var(--error);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #b71c1c;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-busy {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+/* ============================================
+   CHAMPS DE FORMULAIRE
+   ============================================ */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.form-label .required {
+  color: var(--error);
+  margin-left: 2px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-md);
+  font-family: var(--font-family);
+  transition: border-color 0.2s ease;
+  background-color: white;
+  min-height: 44px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(0, 107, 60, 0.15);
+}
+
+.form-control:disabled {
+  background-color: #f0f2f0;
+  cursor: not-allowed;
+}
+
+.form-control.readonly {
+  background-color: #f0f2f0;
+  color: var(--text);
+  cursor: default;
+}
+
+textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+/* Champs en erreur */
+.form-control.error {
+  border-color: var(--error);
+}
+
+.form-control.error:focus {
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.15);
+}
+
+/* Messages de validation */
+.validation-message {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--error);
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.badge {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 20px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-new {
+  background-color: #E3F2FD;
+  color: #0D47A1;
+}
+
+.badge-in-progress {
+  background-color: #FFF3E0;
+  color: #E65100;
+}
+
+.badge-resolved {
+  background-color: #E8F5E9;
+  color: #1B5E20;
+}
+
+.badge-closed {
+  background-color: #F5F5F5;
+  color: #616161;
+}
+
+.badge-low {
+  background-color: #E8F5E9;
+  color: #1B5E20;
+}
+
+.badge-medium {
+  background-color: #FFF3E0;
+  color: #E65100;
+}
+
+.badge-high {
+  background-color: #FFEBEE;
+  color: #B71C1C;
+}
+
+.badge-urgent {
+  background-color: #B71C1C;
+  color: white;
+}
+
+/* ============================================
+   CARTES
+   ============================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-lg);
+}
+
+.card-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin-bottom: var(--spacing-md);
+}
+
+/* ============================================
+   ÉTATS : LOADING, EMPTY, ERROR
+   ============================================ */
+.loading-state {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  color: var(--text);
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--pale-green);
+  border-top-color: var(--primary-green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  color: #6B7A74;
+}
+
+.error-state {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--error);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 992px) {
+  .container {
+    padding: 0 var(--spacing-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .card {
+    padding: var(--spacing-md);
+  }
+}
