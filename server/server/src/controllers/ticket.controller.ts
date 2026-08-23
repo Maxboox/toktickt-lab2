@@ -59,10 +59,8 @@ export const createTicket = async (req: Request, res: Response) => {
   }
 }
 
-// GET /api/tickets - Liste des tickets du requester
 export const getTickets = async (req: Request, res: Response) => {
   try {
-    // 1. Récupérer les paramètres de requête
     const requesterId = parseInt(req.query.requesterId as string)
     const page = parseInt(req.query.page as string) || 1
     const limit = parseInt(req.query.limit as string) || 10
@@ -72,12 +70,10 @@ export const getTickets = async (req: Request, res: Response) => {
     const sort = (req.query.sort as string) || 'createdAt'
     const order = (req.query.order as string) || 'desc'
 
-    // 2. Vérifier que requesterId est fourni
     if (!requesterId) {
       return res.status(400).json({ error: 'requesterId is required' })
     }
 
-    // 3. Construire la clause WHERE
     const where: any = {
       requesterId,
       ...(categoryId && { categoryId }),
@@ -91,14 +87,11 @@ export const getTickets = async (req: Request, res: Response) => {
       })
     }
 
-    // 4. Construire la clause ORDER BY
     const orderBy: any = {}
     orderBy[sort] = order
 
-    // 5. Calculer le skip pour la pagination
     const skip = (page - 1) * limit
 
-    // 6. Exécuter les requêtes
     const [tickets, total] = await Promise.all([
       prisma.ticket.findMany({
         where,
@@ -118,7 +111,6 @@ export const getTickets = async (req: Request, res: Response) => {
       prisma.ticket.count({ where })
     ])
 
-    // 7. Retourner la réponse avec pagination
     res.json({
       items: tickets,
       pagination: {
@@ -132,6 +124,52 @@ export const getTickets = async (req: Request, res: Response) => {
     })
   } catch (error) {
     console.error('Get tickets error:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+}
+
+// GET /api/tickets/:id - Détail d'un ticket avec vérification d'ownership
+export const getTicketById = async (req: Request, res: Response) => {
+  try {
+    const ticketId = parseInt(req.params.id)
+    const requesterId = parseInt(req.query.requesterId as string)
+
+    if (!requesterId) {
+      return res.status(400).json({ error: 'requesterId is required' })
+    }
+
+    // Récupérer le ticket
+    const ticket = await prisma.ticket.findFirst({
+      where: { id: ticketId },
+      include: {
+        requester: { select: { id: true, name: true, email: true } },
+        category: { select: { id: true, name: true } },
+        system: { select: { id: true, name: true } },
+        attachments: {
+          where: { isDeleted: false },
+          select: {
+            id: true,
+            fileName: true,
+            fileType: true,
+            fileSize: true,
+            uploadDate: true
+          }
+        }
+      }
+    })
+
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' })
+    }
+
+    // Vérification de l'ownership
+    if (ticket.requesterId !== requesterId) {
+      return res.status(403).json({ error: 'You do not have permission to view this ticket' })
+    }
+
+    res.json(ticket)
+  } catch (error) {
+    console.error('Get ticket detail error:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 }
