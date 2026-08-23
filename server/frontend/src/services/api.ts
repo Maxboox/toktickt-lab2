@@ -164,3 +164,53 @@ export const getTickets = async (filters: TicketFilters): Promise<TicketListResp
   }
   return response.json()
 }
+
+// Ticket Detail
+export const getTicketById = async (id: number, requesterId: number): Promise<Ticket> => {
+  const response = await fetch(`${API_URL}/tickets/${id}?requesterId=${requesterId}`)
+  if (response.status === 404) {
+    throw new Error('Ticket not found')
+  }
+  if (response.status === 403) {
+    throw new Error('You do not have permission to view this ticket')
+  }
+  if (!response.ok) {
+    throw new Error('Failed to fetch ticket')
+  }
+  return response.json()
+}
+
+// Attachments
+export const uploadAttachment = async (ticketId: number, requesterId: number, file: File): Promise<Attachment> => {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('requesterId', String(requesterId))
+  
+  const response = await fetch(`${API_URL}/tickets/${ticketId}/attachments`, {
+    method: 'POST',
+    body: formData
+  })
+  
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to upload attachment')
+  }
+  return response.json()
+}
+
+export const deleteAttachment = async (attachmentId: number, requesterId: number): Promise<void> => {
+  const response = await fetch(`${API_URL}/attachments/${attachmentId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ requesterId })
+  })
+  
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to delete attachment')
+  }
+}
+
+export const downloadAttachment = (attachmentId: number, requesterId: number): string => {
+  return `${API_URL}/attachments/${attachmentId}/download?requesterId=${requesterId}`
+}
