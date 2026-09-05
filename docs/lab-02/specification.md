@@ -206,6 +206,3 @@ The IT department requires a professional application for users to submit suppor
 - Soft-delete is used instead of hard delete for attachments.
 - The Development Requester selection is for testing only and will be replaced by real authentication in Lab 3.
 
----
-
-*This specification was created on [DATE] and served as the contract for Sprint 2 implementation.*
