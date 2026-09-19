@@ -3,9 +3,8 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import cookieParser from 'cookie-parser'
-import ticketRoutes from './routes/ticket.routes'
-import attachmentRoutes from './routes/attachment.routes'
 import authRoutes from './routes/auth.routes'
+import itRoutes from './routes/it.routes'
 
 dotenv.config()
 
@@ -16,10 +15,8 @@ app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
 app.use(express.json())
 app.use(cookieParser())
 
-// Routes
 app.use('/api', authRoutes)
-app.use('/api', ticketRoutes)
-app.use('/api', attachmentRoutes)
+app.use('/api', itRoutes)
 
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')))
 
