@@ -1,0 +1,214 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// USER (remplace Requester)
+// ============================================================
+model User {
+  id                  Int      @id @default(autoincrement())
+  name                String
+  email               String   @unique
+  passwordHash        String
+  role                Role     @default(REQUESTER)
+  isActive            Boolean  @default(true)
+  mustChangePassword  Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  ticketsRequested    Ticket[]         @relation("TicketRequester")
+  ticketsOwned        Ticket[]         @relation("TicketOwner")
+  attachments         Attachment[]
+  publicComments      PublicComment[]
+  internalNotes       InternalNote[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+// ============================================================
+// CATEGORY / SYSTEM
+// ============================================================
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tickets     Ticket[]
+
+  @@map("categories")
+}
+
+model System {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tickets     Ticket[]
+
+  @@map("systems")
+}
+
+// ============================================================
+// TICKET
+// ============================================================
+model Ticket {
+  id              Int              @id @default(autoincrement())
+  ticketNumber    String           @unique
+  ticketDate      DateTime         @default(now())
+
+  // Requester (créateur)
+  requesterId     Int
+  requester       User             @relation("TicketRequester", fields: [requesterId], references: [id])
+
+  // Owner (IT Staff / Admin qui a claim)
+  ownerId         Int?
+  owner           User?            @relation("TicketOwner", fields: [ownerId], references: [id])
+
+  // Catégorie / Système
+  categoryId      Int
+  category        Category         @relation(fields: [categoryId], references: [id])
+
+  systemId        Int
+  system          System           @relation(fields: [systemId], references: [id])
+
+  // Champs
+  summary              String
+  description          String
+  requestedPriority    RequestedPriority @default(MEDIUM)
+  itPriority           ITPriority?
+  currentStatus        TicketStatus      @default(NEW)
+  resolutionSummary    String?
+
+  // Indication "Problem appears resolved" par le Requester
+  resolvedByRequester  Boolean          @default(false)
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  attachments     Attachment[]
+  publicComments  PublicComment[]
+  internalNotes   InternalNote[]
+
+  @@index([requesterId])
+  @@index([ownerId])
+  @@index([currentStatus])
+  @@index([ticketNumber])
+  @@map("tickets")
+}
+
+// ============================================================
+// ATTACHMENT
+// ============================================================
+model Attachment {
+  id              Int       @id @default(autoincrement())
+  ticketId        Int
+  ticket          Ticket    @relation(fields: [ticketId], references: [id])
+
+  uploadedById    Int
+  uploadedBy      User      @relation(fields: [uploadedById], references: [id])
+
+  fileName        String
+  fileType        String
+  fileSize        Int
+  filePath        String
+  uploadDate      DateTime  @default(now())
+
+  isDeleted       Boolean   @default(false)
+  deletedAt       DateTime?
+  deletionReason  String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([ticketId])
+  @@index([isDeleted])
+  @@map("attachments")
+}
+
+// ============================================================
+// PUBLIC COMMENT
+// ============================================================
+model PublicComment {
+  id         Int      @id @default(autoincrement())
+  ticketId   Int
+  ticket     Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  authorId   Int
+  author     User     @relation(fields: [authorId], references: [id])
+
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([ticketId])
+  @@map("public_comments")
+}
+
+// ============================================================
+// INTERNAL NOTE
+// ============================================================
+model InternalNote {
+  id         Int      @id @default(autoincrement())
+  ticketId   Int
+  ticket     Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  authorId   Int
+  author     User     @relation(fields: [authorId], references: [id])
+
+  content    String
+  createdAt  DateTime @default(now())
+
+  @@index([ticketId])
+  @@map("internal_notes")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+enum Role {
+  REQUESTER
+  IT_STAFF
+  ADMINISTRATOR
+}
+
+enum RequestedPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ITPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TicketStatus {
+  NEW
+  OPEN
+  IN_PROGRESS
+  WAITING_FOR_REQUESTER
+  RESOLVED
+  CLOSED
+  REOPENED
+  CANCELLED
+}
