@@ -5,6 +5,7 @@ import path from 'path'
 import cookieParser from 'cookie-parser'
 import authRoutes from './routes/auth.routes'
 import itRoutes from './routes/it.routes'
+import adminRoutes from './routes/admin.routes'
 
 dotenv.config()
 
@@ -17,6 +18,7 @@ app.use(cookieParser())
 
 app.use('/api', authRoutes)
 app.use('/api', itRoutes)
+app.use('/api', adminRoutes)
 
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')))
 
