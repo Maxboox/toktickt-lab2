@@ -1,16 +1,17 @@
-import React from 'react'
+import React, { ReactNode, Children, isValidElement } from 'react';
 
 interface SelectOption {
-  id: number | string
-  name: string
+  id: number | string;
+  name: string;
 }
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label?: string
-  required?: boolean
-  error?: string
-  options: SelectOption[]
-  placeholder?: string
+  label?: string;
+  required?: boolean;
+  error?: string;
+  options?: SelectOption[];
+  placeholder?: string;
+  children?: ReactNode;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -21,9 +22,27 @@ export const Select: React.FC<SelectProps> = ({
   placeholder = 'Select an option',
   id,
   className = '',
+  children,
   ...props
 }) => {
-  const selectId = id || `select-${Math.random().toString(36).substring(7)}`
+  const selectId = id || `select-${Math.random().toString(36).substring(7)}`;
+
+  let optionElements: ReactNode = null;
+
+  // Si options existe et est un tableau valide
+  if (options && Array.isArray(options) && options.length > 0) {
+    optionElements = options.map((option) => (
+      <option key={option.id} value={option.id}>
+        {option.name}
+      </option>
+    ));
+  } else if (children) {
+    // Sinon, on utilise les children
+    const validChildren = Children.toArray(children).filter(isValidElement);
+    if (validChildren.length > 0) {
+      optionElements = validChildren;
+    }
+  }
 
   return (
     <div className="form-group">
@@ -39,13 +58,9 @@ export const Select: React.FC<SelectProps> = ({
         {...props}
       >
         <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.id} value={option.id}>
-            {option.name}
-          </option>
-        ))}
+        {optionElements}
       </select>
       {error && <span className="validation-message">{error}</span>}
     </div>
-  )
-}
+  );
+};
